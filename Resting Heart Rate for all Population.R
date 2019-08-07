@@ -207,6 +207,9 @@ for (i in 1:8) {
   total <- rbind (total,T)
 }
 
+sort (total$Rheartrate)
+mean (total$Rheartrate, na.rm =  TRUE)
+sd(total$Rheartrate,na.rm = TRUE)
 
 
 # Kernel Density Plot
