@@ -21,17 +21,22 @@ library(car)
 ###Took out diabetes type 1 and 2 info for all since they were same as diabetes
 data<-read.csv ("Desktop/PTSD/PTSD Data/New/Data demographics for SA DC GL/CombinedData.csv", header=TRUE)
 
-
+data$trigger = log(data$stress+1)
 subdata <-data[,c("Age","Gender", "Anti.depressants","Anxiolytics", "Glucocorticoids", "Smoke", "Alcohol", "Exercise", "Sleep", "accxavg","accyavg","acczavg","Accvector","Rheartrate","hravg","stress")]
 
 
+d <- density(data$Rheartrate, na.rm = TRUE) # returns the density data 
+plot(d, main="",
+     xlab="Resting heart rate",
+     ylab="Density",) # plots the results
+
+hist(data$Rheartrate, main="",
+     xlab="Resting heart Rate",
+     ylab="Frequency",labels=TRUE) 
+
 #trigger is log stress for poisson distribution
-subdata$trigger = log(subdata$stress+1)
+#subdata$trigger = log(subdata$stress+1)
 corr = cor(subdata)
-
-fit <- lm(data$stress~data$Rheartrate)
-summary(fit)
-
 
 ggcorrplot(cor(subdata), type = "lower",
            outline.col = "white")
@@ -66,7 +71,7 @@ step1 <- stepAIC(full.model, direction="both")
 
 attach(subdata)
 model = lm(Rheartrate ~ Gender + Anti.depressants + Anxiolytics + Smoke + 
-             Sleep + acczavg + hravg + trigger )
+             Sleep + acczavg + trigger )
 summary(model)
 
 #incase tidysrse doesnt work --> khafam kard!
@@ -84,3 +89,5 @@ with(subdata, plot3d(Rheartrate,hravg,trigger, type = 's', col=as.integer(Anxiol
 #with(subdata, plot3d(Rheartrate,hravg,trigger, type = 'l', col=as.integer(Gender)+2))
 #scatter3d(x = Rheartrate, y = hravg, z = trigger,surface=FALSE, grid = FALSE, ellipsoid = TRUE)
 
+fit <- lm(data$stress~data$Rheartrate)
+summary(fit)
