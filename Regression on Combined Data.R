@@ -18,6 +18,7 @@ library(rgl)
 library(car)
 #read Data
 #demo is demographic data
+###Took out diabetes type 1 and 2 info for all since they were same as diabetes
 data<-read.csv ("Desktop/PTSD/PTSD Data/New/Data demographics for SA DC GL/CombinedData.csv", header=TRUE)
 
 
