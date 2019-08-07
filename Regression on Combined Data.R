@@ -31,6 +31,8 @@ corr = cor(subdata)
 
 fit <- lm(data$stress~data$Rheartrate)
 summary(fit)
+
+
 ggcorrplot(cor(subdata), type = "lower",
            outline.col = "white")
 
@@ -47,7 +49,7 @@ subdata = transform(subdata,  acczavg= ifelse(is.na(acczavg), mean(acczavg, na.r
 #subdata = transform(subdata,  acczavgLin= ifelse(is.na(acczavgLin), mean(acczavgLin, na.rm=TRUE), acczavgLin))
 subdata = transform(subdata,  Accvector= ifelse(is.na(Accvector), mean(Accvector, na.rm=TRUE), Accvector))
 
-# Fit the full model 
+# Fit the full model for average heart rate --> the model is not the one used in papers
 full.model <- lm(hravg ~., data = subdata)
 
 step1 <- stepAIC(full.model, direction="both")
@@ -57,7 +59,7 @@ model = lm(hravg ~ Anti.depressants +  Smoke+ accxavg + acczavg + Accvector +
              Rheartrate + stress )
 summary(model)
 
-
+###this is modeled on resting heart rate, the model is the one used in papers
 full.model <- lm(Rheartrate ~., data = subdata)
 
 step1 <- stepAIC(full.model, direction="both")
