@@ -22,7 +22,7 @@ library(car)
 data<-read.csv ("Desktop/PTSD/PTSD Data/New/Data demographics for SA DC GL/CombinedData.csv", header=TRUE)
 
 data$Trigger = log(data$stress+1)
-subdata <-data[,c("Age","Gender", "Anti.depressants","Anxiolytics", "Glucocorticoids", "Smoke", "Alcohol", "Exercise", "Sleep", "accxavg","accyavg","acczavg","Accvector","Rheartrate","hravg","stress")]
+subdata <-data[,c("Age","Gender", "Anti.depressants","Anxiolytics", "Glucocorticoids", "Smoke", "Alcohol", "Exercise", "Sleep", "accxavg","accyavg","acczavg","Accvector","Rheartrate","hravg","Trigger")]
 
 
 d <- density(data$Rheartrate, na.rm = TRUE) # returns the density data 
