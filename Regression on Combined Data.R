@@ -21,7 +21,7 @@ library(car)
 ###Took out diabetes type 1 and 2 info for all since they were same as diabetes
 data<-read.csv ("Desktop/PTSD/PTSD Data/New/Data demographics for SA DC GL/CombinedData.csv", header=TRUE)
 
-data$trigger = log(data$stress+1)
+data$Trigger = log(data$stress+1)
 subdata <-data[,c("Age","Gender", "Anti.depressants","Anxiolytics", "Glucocorticoids", "Smoke", "Alcohol", "Exercise", "Sleep", "accxavg","accyavg","acczavg","Accvector","Rheartrate","hravg","stress")]
 
 
@@ -71,7 +71,7 @@ step1 <- stepAIC(full.model, direction="both")
 
 attach(subdata)
 model = lm(Rheartrate ~ Gender + Anti.depressants + Anxiolytics + Smoke + 
-             Sleep + acczavg + trigger )
+             Sleep + acczavg + Trigger )
 summary(model)
 
 #incase tidysrse doesnt work --> khafam kard!
@@ -82,9 +82,9 @@ subsetplot = subdata <-data[,c("Rheartrate","hravg","stress")]
 
 
 #3D Plots
-with(subdata, plot3d(Rheartrate,hravg,trigger))
-with(subdata, plot3d(Rheartrate,hravg,trigger, type = 's', col=as.integer(Gender)+14))
-with(subdata, plot3d(Rheartrate,hravg,trigger, type = 's', col=as.integer(Anxiolytics)+9))
+with(subdata, plot3d(Rheartrate,hravg,Trigger))
+with(subdata, plot3d(Rheartrate,hravg,Trigger, type = 's', col=as.integer(Gender)+14))
+with(subdata, plot3d(Rheartrate,hravg,Trigger, type = 's', col=as.integer(Anxiolytics)+9))
 
 #with(subdata, plot3d(Rheartrate,hravg,trigger, type = 'l', col=as.integer(Gender)+2))
 #scatter3d(x = Rheartrate, y = hravg, z = trigger,surface=FALSE, grid = FALSE, ellipsoid = TRUE)
