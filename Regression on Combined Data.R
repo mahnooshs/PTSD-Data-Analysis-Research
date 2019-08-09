@@ -22,7 +22,7 @@ library(car)
 data<-read.csv ("Desktop/PTSD/PTSD Data/New/Data demographics for SA DC GL/CombinedData.csv", header=TRUE)
 
 data$Trigger = log(data$stress+1)
-subdata <-data[,c("Age","Gender", "Anti.depressants","Anxiolytics", "Glucocorticoids", "Smoke", "Alcohol", "Exercise", "Sleep", "accxavg","accyavg","acczavg","Accvector","Rheartrate","hravg","Trigger")]
+subdata <-data[,c("Age","Gender", "Anti.depressants","Anxiolytics", "Glucocorticoids", "Smoke", "Alcohol", "Exercise", "Sleep","Rheartrate","hravg","Trigger")]
 
 
 d <- density(data$Rheartrate, na.rm = TRUE) # returns the density data 
@@ -44,15 +44,15 @@ ggcorrplot(cor(subdata), type = "lower",
 ggcorrplot(corr, type = "lower",
            lab = TRUE)
 
-
+#including ACC data here is not useful based on domain knowledge
 #Compute missing value
-subdata = transform(subdata,  accxavg= ifelse(is.na(accxavg), mean(accxavg, na.rm=TRUE), accxavg))
-subdata = transform(subdata,  accyavg= ifelse(is.na(accyavg), mean(accyavg, na.rm=TRUE), accyavg))
-subdata = transform(subdata,  acczavg= ifelse(is.na(acczavg), mean(acczavg, na.rm=TRUE), acczavg))
-#subdata = transform(subdata,  accxavgLin= ifelse(is.na(accxavgLin), mean(accxavgLin, na.rm=TRUE), accxavgLin))
-#subdata = transform(subdata,  accyavgLin= ifelse(is.na(accyavgLin), mean(accyavgLin, na.rm=TRUE), accyavgLin))
-#subdata = transform(subdata,  acczavgLin= ifelse(is.na(acczavgLin), mean(acczavgLin, na.rm=TRUE), acczavgLin))
-subdata = transform(subdata,  Accvector= ifelse(is.na(Accvector), mean(Accvector, na.rm=TRUE), Accvector))
+#subdata = transform(subdata,  accxavg= ifelse(is.na(accxavg), mean(accxavg, na.rm=TRUE), accxavg))
+#subdata = transform(subdata,  accyavg= ifelse(is.na(accyavg), mean(accyavg, na.rm=TRUE), accyavg))
+#subdata = transform(subdata,  acczavg= ifelse(is.na(acczavg), mean(acczavg, na.rm=TRUE), acczavg))
+#subdata = transform(subdata,  Accvector= ifelse(is.na(Accvector), mean(Accvector, na.rm=TRUE), Accvector))
+##subdata = transform(subdata,  accxavgLin= ifelse(is.na(accxavgLin), mean(accxavgLin, na.rm=TRUE), accxavgLin))
+##subdata = transform(subdata,  accyavgLin= ifelse(is.na(accyavgLin), mean(accyavgLin, na.rm=TRUE), accyavgLin))
+##subdata = transform(subdata,  acczavgLin= ifelse(is.na(acczavgLin), mean(acczavgLin, na.rm=TRUE), acczavgLin))
 
 # Fit the full model for average heart rate --> the model is not the one used in papers
 full.model <- lm(hravg ~., data = subdata)
@@ -60,8 +60,8 @@ full.model <- lm(hravg ~., data = subdata)
 step1 <- stepAIC(full.model, direction="both")
 
 attach(subdata)
-model = lm(hravg ~ Anti.depressants +  Smoke+ accxavg + acczavg + Accvector + 
-             Rheartrate + stress )
+model = lm(hravg ~ Anti.depressants +  Smoke+ 
+             Rheartrate + Trigger )
 summary(model)
 
 ###this is modeled on resting heart rate, the model is the one used in papers
@@ -71,8 +71,12 @@ step1 <- stepAIC(full.model, direction="both")
 
 attach(subdata)
 model = lm(Rheartrate ~ Gender + Anti.depressants + Anxiolytics + Smoke + 
-             Sleep + acczavg + Trigger )
+             Sleep + hravg+Trigger )
 summary(model)
+
+#checking for multicollinearity (VIF>10) --> not found
+vif(model)
+
 
 #incase tidysrse doesnt work --> khafam kard!
 #remove.packages(c( "tidyverse", "plotly"))
