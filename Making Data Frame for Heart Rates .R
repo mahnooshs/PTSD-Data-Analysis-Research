@@ -112,6 +112,10 @@ for (i in 1:36) {
   total <- rbind (total,ndata)
 }
 
+#Saving the aggregated file --> moved it later to PTSD Descriptive (for descriptive paper ) Folder
+
+write.csv(total,"Desktop/PTSD/PTSD Data/stressmoments.csv", row.names = FALSE)
+
 #count number of people reported stress moments in each zone, for instance in DC 20 people reported stress.
 library(data.table)
 setDT(total)[, .(count = uniqueN(i)), by = zone]
