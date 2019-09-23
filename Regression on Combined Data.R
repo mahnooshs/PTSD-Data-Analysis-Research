@@ -22,7 +22,7 @@ library(car)
 data<-read.csv ("Desktop/PTSD/PTSD Data/New/Data demographics for SA DC GL/CombinedData.csv", header=TRUE)
 
 data$Trigger = log(data$stress+1)
-subdata <-data[,c("Age","Gender", "Anti.depressants","Anxiolytics", "Glucocorticoids", "Smoke", "Alcohol", "Exercise", "Sleep","Rheartrate","hravg","Trigger")]
+subdata <-data[,c("Gender", "Anti.depressants","Anxiolytics", "Smoke", "Age","Sleep","Rheartrate","hravg","Alcohol", "Exercise", "Glucocorticoids")]
 
 
 d <- density(data$Rheartrate, na.rm = TRUE) # returns the density data 
@@ -43,6 +43,14 @@ ggcorrplot(cor(subdata), type = "lower",
 
 ggcorrplot(corr, type = "lower",
            lab = TRUE)
+
+##Testing some correlations
+cor.test(data$Rheartrate,data$hravg, method=c("pearson", "kendall", "spearman"))
+
+cor.test(data$Rheartrate,data$Smoke, method=c("pearson", "kendall", "spearman"))
+
+
+cor.test(data$Rheartrate,data$Anti.depressants, method=c("pearson", "kendall", "spearman"))
 
 #including ACC data here is not useful based on domain knowledge
 #Compute missing value
@@ -71,7 +79,7 @@ step1 <- stepAIC(full.model, direction="both")
 
 attach(subdata)
 model = lm(Rheartrate ~ Gender + Anti.depressants + Anxiolytics + Smoke + 
-             Sleep + hravg+Trigger )
+             Sleep + hravg)
 summary(model)
 
 #checking for multicollinearity (VIF>10) --> not found
