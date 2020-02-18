@@ -184,20 +184,61 @@ plot(d4$nhr, main="Healthy Heart Rate Profile",
 adf.test(d4$hr, k=0)
 auto.arima(d4$hr)
 kpss.test(d4$hr)
-par(mfrow=c(1,1))
+par(mfrow=c(1,2))
 
 
 
+par(cex.main=0.75)
 
 ###detrended fluctuation
-dfa(df1$hr1,window.size.range=c(1,150), main='Detrended Fluctuation Analysis for stress window')
-dfa(d4$hr,window.size.range=c(1,150), main='Detrended Fluctuation Analysis for NON stress window')
+dfa(d4$hr, 
+    main='Detrended Fluctuation Analysis for NON stress window')
+dfa(df1$hr1,
+    main='Detrended Fluctuation Analysis for stress window')
+
+#In case you want the window size
+l1 = dfa(d4$hr ,window.size.range=c(100,600),
+    main='Detrended Fluctuation Analysis for NON stress window')
+l2 = dfa(df1$hr1 ,window.size.range=c(100,600),
+    main='Detrended Fluctuation Analysis for stress window')
+
+library (plyr)
+
+##Ploting DFA in ggplot
+dfahealthy <- ldply (l1, data.frame)
+names(dfahealthy)[names(dfahealthy) == ".id"] <- "type"
+names(dfahealthy)[names(dfahealthy) == "X..i.."] <- "value"
+X = subset(dfahealthy, dfahealthy$type == 'window.sizes')
+names(X)[names(X) == "value"] <- "window.sizes"
+names(X)[names(X) == "type"] <- "m"
+Y = subset(dfahealthy, dfahealthy$type == 'fluctuation.function')
+names(Y)[names(Y) == "value"] <- "fluctuation.function"
+names(Y)[names(Y) == "type"] <- "s"
+dfahealthy= data.frame(X,Y)
+dfahealthy$type= 'Healthy'
 
 
+dfaptsd <- ldply (l2, data.frame)
+names(dfaptsd)[names(dfaptsd) == ".id"] <- "type"
+names(dfaptsd)[names(dfaptsd) == "X..i.."] <- "value"
+X = subset(dfaptsd, dfaptsd$type == 'window.sizes')
+names(X)[names(X) == "value"] <- "window.sizes"
+names(X)[names(X) == "type"] <- "m"
+Y = subset(dfaptsd, dfaptsd$type == 'fluctuation.function')
+names(Y)[names(Y) == "value"] <- "fluctuation.function"
+names(Y)[names(Y) == "type"] <- "s"
+dfaptsd= data.frame(X,Y)
+dfaptsd$type= 'PTSD'
 
+dfatotal = rbind(dfahealthy,dfaptsd)
 
+ggplot(dfatotal)+geom_point(aes(x=dfatotal$window.sizes, 
+                                  y = dfatotal$fluctuation.function, 
+                                  color= dfatotal$type), size =3)+
+  ggtitle('Fluctuation Graph')+ xlab("Window size: t") + 
+  ylab("Fluctuation function: F(t)")+ labs(color='Type') 
 
-
+ggsave('dfa.pdf')
 
 
 ###For myself for checking Dickey-Fullers test for random sample of stress moments
@@ -223,7 +264,7 @@ plot1 = ggAcf(
   plot = TRUE,
   na.action = na.contiguous,
   demean = TRUE
-) + ggtitle("Autocorrelation Plot for PTSD Windows ")+ theme(
+) + ggtitle("Autocorrelation Plot for Healthy Windows ")+ theme(
   plot.title = element_text(hjust = 0.5, size = 10))
 
 #ggsave('Autocorrelation for PTSD windows.pdf')
@@ -241,6 +282,6 @@ plot2 = ggAcf(
 
 grid.arrange(plot1, plot2, ncol=2)
 
-ncol()ggsave('Autocorrelation for windows of heart rate.pdf')
+ggsave('Autocorrelation for windows of heart rate.pdf')
 
 
