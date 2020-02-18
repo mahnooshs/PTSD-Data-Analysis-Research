@@ -136,6 +136,16 @@ plot(d, main="",
 hist(hrlist, main="",
      xlab="Heart Rate",
      ylab="Density",labels=TRUE) 
+
+##Ploting with ggplot
+library(ggplot2)
+library(plyr)
+heartrate <- ldply (hrlist, data.frame)
+names(heartrate)[names(heartrate) == "X..i.."] <- "hr"
+ggplot(heartrate, aes(x= hr)) + 
+  geom_density() + xlab('Heart rate during reported stress moments')
+
+
 #### Plotting time vs stress moments
 
 minute <- as.POSIXlt(as.character(total$time), format="%H:%M:%S")
