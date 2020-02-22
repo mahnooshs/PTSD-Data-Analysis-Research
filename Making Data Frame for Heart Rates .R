@@ -116,6 +116,10 @@ for (i in 1:36) {
 
 write.csv(total,"Desktop/PTSD/PTSD Data/stressmoments.csv", row.names = FALSE)
 
+
+#Read in the data so that you do not have to redo it
+total = read.csv("Desktop/PTSD/PTSD Data/PTSD Descriptive (for Descriptive paper)/stressmoments.csv")
+
 #count number of people reported stress moments in each zone, for instance in DC 20 people reported stress.
 library(data.table)
 setDT(total)[, .(count = uniqueN(i)), by = zone]
@@ -142,44 +146,61 @@ library(ggplot2)
 library(plyr)
 heartrate <- ldply (hrlist, data.frame)
 names(heartrate)[names(heartrate) == "X..i.."] <- "hr"
+theme_set(theme_bw((base_size=24)))
 ggplot(heartrate, aes(x= hr)) + 
   geom_density() + xlab('Heart rate during reported stress moments')
-
+ggsave('Heart Rate Density.pdf', dpi=300)
+ggsave('Heart Rate Density.png', dpi=300)
 
 #### Plotting time vs stress moments
 
 minute <- as.POSIXlt(as.character(total$time), format="%H:%M:%S")
 plot( minute, total$ptsd_moment, xlab="Time", ylab="Stress")
 options(scipen=999)
-hist(minute , breaks = "hours",labels=TRUE, freq = TRUE, xlab="Hour of Day",ylab="Frequency of Stress Moments", main="")
+hist(minute , breaks = "hours",labels=TRUE, freq = TRUE,
+     xlab="Hour of Day",ylab="Frequency of Stress Moments", main="")
 
+
+#minute1 <- as.POSIXct(as.character(total$time), format="%H:%M:%S")
 
 
 ##Plot of heart rate measures in stress moments
 plot( minute[!total$hr==0], total$hr[!total$hr==0], xlab="Time", ylab="Heart Rate in Stress Moments")
 
-
+#ggplot(total, 
+      # aes(x=minute1, y=total$hr)) + geom_point()
 
 ####Activity
 total$linearacc = sqrt((total$linear_accel_x^2)+(total$linear_accel_y^2)+(total$linear_accel_z^2))
 
-for (i in 1:1023)
-{
-  if (total$linearacc[i] > 1.5) 
-    {total$activity[i] <- "Biking"}
-  else if (total$linearacc[i] <1.5 && total$linearacc[i]>0.5) {total$activity[i] <- "Walking"}
-  else (total$activity[i] <- "Sitting")
+total$linearacc[is.na(total$linearacc)] <- 0
+total$linear_accel_x[is.na(total$linear_accel_x)] <- 0
+
+total$activity=NA
+
+for (i in 1:1023){
+  if (total$linear_accel_x[i] > 1.3) 
+    {total$activity[i] <- "Active"}
+  else (total$activity[i] <- "Resting")
 } 
 
 library(ggplot2)
 
 #Activity plot vs stress counts
+
+dodge <- position_dodge(width = 0.5)
+
 ggplot(total,
        aes(factor(activity))) +
   geom_bar(fill = "black",
-           alpha = 0.8, width=.2) +
-  theme_classic()+ ggtitle("") +
-  xlab("Activity") + ylab("Number of Stress Moments")
+           alpha = 1, width=0.9) + ggtitle("") +
+  xlab("Activity") + ylab("Number of stress moments reported")
+
+ggsave('Activity.pdf', dpi=300)
+ggsave('Activity.png', dpi=300)
+#ggsave('Activity.pdf')
+
+
 
 ##
 

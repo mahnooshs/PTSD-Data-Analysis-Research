@@ -16,6 +16,7 @@ library(ggcorrplot)
 library(plot3D)
 library(rgl)
 library(car)
+theme_set(theme_bw(base_size=24))
 #read Data
 #demo is demographic data
 ###Took out diabetes type 1 and 2 info for all since they were same as diabetes

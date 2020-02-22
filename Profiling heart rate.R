@@ -11,7 +11,7 @@ for (i in 1:16) {
   data <- read.csv (filename <- p[[i]])
   total<- rbind (total,data)
 }
-par(mfrow=c(3,3)) 
+#par(mfrow=c(3,3)) 
 
 library(forecast)
 library(ggplot2)
@@ -82,7 +82,7 @@ plot(df1$hr1)
 points(match(df1$hr1[df1$ptsd_moment=='STRESSMOMENT'],df1$hr1),
        df1$hr1 [df1$ptsd_moment=='STRESSMOMENT'], col='red', pch = 19, cex=1.5)
 #df1$hrn=standardize(df1$hr, centerFun = mean, scaleFun = sd)
-
+theme_set(theme_bw())
 #With GGPLOT
 ggplot(data=df1) +geom_point(aes( x= seq(1, length(df1$nhr)), y=df1$nhr))+
   geom_point(aes(which (df1$ptsd_moment %in% 'STRESSMOMENT'),

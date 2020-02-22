@@ -1,5 +1,5 @@
 ###This piece of code calculates resting heart rate for all participants that we have data from based on their activity level
-
+## The output is saved in PTSD data in resting heart rate for all folder
 ls()
 rm(list=ls())
 library(ggplot2)
@@ -207,6 +207,12 @@ for (i in 1:8) {
   total <- rbind (total,T)
 }
 
+write.csv(total, file="RestingHeartRateAll.csv")
+
+#Read in the data from the saved file
+total = read.csv("Desktop/PTSD/PTSD Data/Resting heart rate for all/RestingHeartRateAll.csv")
+
+
 sort (total$Rheartrate)
 mean (total$Rheartrate, na.rm =  TRUE)
 sd(total$Rheartrate,na.rm = TRUE)
@@ -221,6 +227,15 @@ plot(d, main="",
 hist(total$Rheartrate, main="",
      xlab="Resting Hear Rate",
      ylab="Frequency",labels=TRUE) 
+
+library(ggplot2)
+theme_set(theme_bw((base_size=24)))
+ggplot(total, aes(x= Rheartrate)) + 
+  geom_density() + xlab('Resting heart rate')
+
+
+ggsave('Resting Heart Rate Density.pdf', dpi=300)
+ggsave('Resting Heart Rate Density.png', dpi=300)
 
 
 
