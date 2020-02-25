@@ -148,9 +148,10 @@ heartrate <- ldply (hrlist, data.frame)
 names(heartrate)[names(heartrate) == "X..i.."] <- "hr"
 theme_set(theme_bw((base_size=24)))
 ggplot(heartrate, aes(x= hr)) + 
-  geom_density() + xlab('Heart rate during reported stress moments')
-ggsave('Heart Rate Density.pdf', dpi=300)
-ggsave('Heart Rate Density.png', dpi=300)
+  geom_density(size=1.5, fill='grey') + xlab('Heart rate during reported stress moments')
+
+ggsave('Heart Rate Density grey.pdf', dpi=300)
+ggsave('Heart Rate Density grey.png', dpi=300)
 
 #### Plotting time vs stress moments
 
@@ -186,15 +187,29 @@ for (i in 1:1023){
 
 library(ggplot2)
 
-#Activity plot vs stress counts
+#Activity plot vs stress count
 
 dodge <- position_dodge(width = 0.5)
-
+theme_set(theme_bw((base_size=24)))
 ggplot(total,
        aes(factor(activity))) +
   geom_bar(fill = "black",
-           alpha = 1, width=0.9) + ggtitle("") +
+           alpha = 1, width=0.2) + ggtitle("") +
   xlab("Activity") + ylab("Number of stress moments reported")
+
+ggplot(data=dat, aes(x=time, y=total_bill, fill=time)) +
+  geom_bar(colour="black", stat="identity")
+
+table(total$activity)
+
+m = matrix(c('Active','Resting', 133,890), nrow = 2, ncol=2)
+m = data.frame(m)
+names(m)[names(m) == "X1"] <- "Activity"
+ggplot(data=m, aes(x=Activity, y=X2, fill=Activity)) +
+  geom_bar(colour="black", stat="identity")+ ggtitle("") +
+  xlab("Activity") + ylab("Number of stress moments reported")+
+  #scale_fill_brewer(palette="Greys")
+  scale_fill_manual(values=c('black',"light grey" ))
 
 ggsave('Activity.pdf', dpi=300)
 ggsave('Activity.png', dpi=300)

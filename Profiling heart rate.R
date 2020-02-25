@@ -78,6 +78,8 @@ for (i in 45:53) {
 ##Plot Imputed data df1
 df1 $hr[df1 $hr==0]<-NA
 df1 $hr1=na_kalman(df1 $hr, model = "StructTS", smooth = TRUE, nit = -1, maxgap = 600) 
+#kalman normalized hr
+df1$knhr= range01(df1$hr1)
 plot(df1$hr1)
 points(match(df1$hr1[df1$ptsd_moment=='STRESSMOMENT'],df1$hr1),
        df1$hr1 [df1$ptsd_moment=='STRESSMOMENT'], col='red', pch = 19, cex=1.5)
@@ -86,8 +88,7 @@ theme_set(theme_bw())
 #With GGPLOT
 ggplot(data=df1) +geom_point(aes( x= seq(1, length(df1$nhr)), y=df1$nhr))+
   geom_point(aes(which (df1$ptsd_moment %in% 'STRESSMOMENT'),
-                 df1$nhr [df1$ptsd_moment=='STRESSMOMENT']), col='red', 
-             size =3)
+                 df1$nhr [df1$ptsd_moment=='STRESSMOMENT']), col='red', size =3)
 
 
 
@@ -234,11 +235,16 @@ dfatotal = rbind(dfahealthy,dfaptsd)
 
 ggplot(dfatotal)+geom_point(aes(x=dfatotal$window.sizes, 
                                   y = dfatotal$fluctuation.function, 
-                                  color= dfatotal$type), size =3)+
+                                  color= dfatotal$type,shape=dfatotal$type,
+                                size= dfatotal$type), size =5)+
   ggtitle('Fluctuation Graph')+ xlab("Window size: t") + 
-  ylab("Fluctuation function: F(t)")+ labs(color='Type') 
+  ylab("Fluctuation function: F(t)")+ labs(color='Type') +labs(shape="Type")+
+  scale_color_manual(values = c("black", "black"))+
+  scale_shape_manual(values=c(16,17))+
+  theme(legend.text  = element_text(size=30))
 
-ggsave('dfa.pdf')
+ggsave('dfa.pdf',dpi=300)
+ggsave('dfa.png',dpi=300)
 
 
 ###For myself for checking Dickey-Fullers test for random sample of stress moments
@@ -256,7 +262,6 @@ for (i in 1:10) {
 ###
 
 
-
 plot1 = ggAcf(
   d4$hr,
   lag.max =450,
@@ -264,8 +269,9 @@ plot1 = ggAcf(
   plot = TRUE,
   na.action = na.contiguous,
   demean = TRUE
-) + ggtitle("Autocorrelation Plot for Healthy Windows ")+ theme(
-  plot.title = element_text(hjust = 0.5, size = 10))
+) + ggtitle("Healthy")+ theme(
+  plot.title = element_text(hjust = 0.5, size = 10))+
+  theme(plot.title = element_text(size = 24))
 
 #ggsave('Autocorrelation for PTSD windows.pdf')
 
@@ -277,11 +283,113 @@ plot2 = ggAcf(
   plot = TRUE,
   na.action = na.contiguous,
   demean = TRUE
-) + ggtitle("Autocorrelation Plot for PTSD Windows ") +theme(
-  plot.title = element_text(hjust = 0.5, size = 10))
+) + ggtitle("PTSD ") +theme(
+  plot.title = element_text(hjust = 0.5, size = 10))+
+  theme(plot.title = element_text(size = 24))
 
-grid.arrange(plot1, plot2, ncol=2)
+#plot3=grid.arrange(plot1, plot2, ncol=2)
+#plot3
+library(ggpubr)
+ggarrange(plot1,plot2)
+ggsave('Autocorrelation for windows of heart rate.pdf', dpi=300)
+ggsave('Autocorrelation for windows of heart rate.png', dpi=300)
 
-ggsave('Autocorrelation for windows of heart rate.pdf')
+
+##Ploting hr healthy window and hr nonhealthy
+
+for (i in 1:600) {
+  d4$Time[i] = i
+}
+d4$type= "Healthy"
+d4$ptsd_moment=""
+names(d4)[names(d4) == "nhr"] <- "knhr"
+
+d5 = df1[c('hr','knhr', 'ptsd_moment')]
+for (i in 1:600) {
+  d5$Time[i] = i
+}
+d5$type="PTSD"
+d6=rbind(d4,d5)
+theme_set(theme_bw(base_size=24))
+#With GGPLOT
+ggplot(data = d6, aes(Time,knhr)) +
+  geom_line(aes( x= Time, y=knhr), size=1.4)+
+         ylab( "Normalized heart rate")+ xlab ("Time(s)") + facet_wrap(~ type)+
+  geom_point(data= subset(d6,type=='PTSD'),
+           aes (x= 100, y=0.1529442),
+           color="red", size=4)
+
+##Best wy to do it
+ggplot(data = d6, aes(Time,knhr)) +
+  geom_line(aes( x= Time, y=knhr), size=1.4)+
+  ylab( "Normalized heart rate")+ xlab ("Time(s)") + facet_wrap(~ type)+
+  geom_point(data= subset(d6,type=='PTSD'),
+             aes (x= which (subset(d6,type=='PTSD')$ptsd_moment %in% 'STRESSMOMENT'), 
+                  y=subset(d6,type=='PTSD')$knhr[subset(d6,type=='PTSD')$ptsd_moment=='STRESSMOMENT']),
+             color="red", size=7)
+
+
+ggsave('HealthyPTSD.pdf', dpi=300)
+ggsave('HealthyPTSD.png', dpi=300)
+
+
+
+##Visualization plotting multuple stress moments, for i=3,6,7,19,28,37,45,66,46
+ts = data.frame()
+j=0
+i=3
+a=(i-1)*600+1
+b=i*600
+s1 = total [a:b,]
+j =j+1
+##Plot Imputed data df1
+s1$hr[s1$hr==0]<-NA
+s1$hr1=na_kalman(s1$hr, model = "StructTS", smooth = TRUE, nit = -1, maxgap = 75) 
+#kalman normalized hr
+s1$knhr= range01(s1$hr1)
+s1$nhr = range01(s1$hr)
+s1 = s1[c('hr','nhr','hr1','knhr', 'ptsd_moment')]
+for (i in 1:600) {
+  s1$Time[i] = i
+  s1$window= j
+}
+ts<- rbind (ts,s1)
+
+#in case you wanna save
+#write.csv(ts,"Desktop/PTSD/PTSD Data/visualization.csv", row.names = FALSE)
+
+ts = read.csv("Desktop/PTSD/PTSD Data/PTSD Descriptive (for Descriptive paper)/visualization.csv")
+
+
+plot(s1$knhr)
+points(match(s1$hr1[s1$ptsd_moment=='STRESSMOMENT'],s1$hr1),
+       s1$hr1 [s1$ptsd_moment=='STRESSMOMENT'], col='red', pch = 19, cex=1.5)
+#df1$hrn=standardize(df1$hr, centerFun = mean, scaleFun = sd)
+
+ggplot(data = ts, aes(Time,knhr)) +
+  geom_line(aes( x= Time, y=knhr), size=1.4)+
+  ylab( "Normalized heart rate")+ xlab ("Time(s)") + facet_wrap(~ window)+ 
+geom_point(data= subset(ts,window==1),aes (x=101,  y=0.5416667), color="red", size=3)+
+geom_point(data= subset(ts,window==1),aes (x=107,  y=0.7083333), color="red", size=3)+
+  geom_point(data= subset(ts,window==1),aes (x=108,  y=0.7500000), color="red", size=3)+
+  geom_point(data= subset(ts,window==1),aes (x=115,  y=0.9166667), color="red", size=3)+
+  geom_point(data= subset(ts,window==2),aes (x=101,  y=0.24), color="red", size=3)+
+  geom_point(data= subset(ts,window==3),aes (x=101,  y=0.8993700 ), color="red", size=3)+
+  geom_point(data= subset(ts,window==3),aes (x=107,  y=0.8616338), color="red", size=3)+
+  geom_point(data= subset(ts,window==4),aes (x=101,  y=0.08928571 ), color="red", size=3)+
+  geom_point(data= subset(ts,window==5),aes (x=101,  y=1), color="red", size=3)+
+  geom_point(data= subset(ts,window==6),aes (x=101,  y=0.1891892), color="red", size=3)+
+  geom_point(data= subset(ts,window==7),aes (x=101,  y=0.1529442), color="red", size=3)+
+  geom_point(data= subset(ts,window==8),aes (x=101,  y=0.5809663), color="red", size=3)+
+  geom_point(data= subset(ts,window==8),aes (x=102,  y=0.6529577), color="red", size=3)+
+  geom_point(data= subset(ts,window==9),aes (x=101,  y=0.6995142), color="red", size=3)+
+  geom_point(data= subset(ts,window==9),aes (x=292,  y=0.6289503), color="red", size=3)+
+  geom_point(data= subset(ts,window==9),aes (x=542,  y=0.4016297), color="red", size=3)
+  
+ggsave('Visualization.pdf',height = 14 , width = 11, dpi=300)
+ggsave('Visualization.png',height = 14, width = 11, dpi=300) 
+  
+#x= which (subset(ts,window=='9')$ptsd_moment %in% 'STRESSMOMENT') 
+#y=subset(ts,window=='9')$knhr[subset(ts,window=='9')$ptsd_moment=='STRESSMOMENT']
 
 

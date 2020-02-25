@@ -43,7 +43,16 @@ ggcorrplot(cor(subdata), type = "lower",
            outline.col = "white")
 
 ggcorrplot(corr, type = "lower",
-           lab = TRUE)
+           lab = TRUE,   insig = "blank")
+
+
+ggsave('Corrplot.pdf', dpi=300)
+ggsave('Corrplot.png', dpi=300)
+
+library(corrplot)
+corrplot(corr, type = "upper", order = "hclust",
+         col = c("black", "white"), bg = "lightblue")
+
 
 ##Testing some correlations
 cor.test(data$Rheartrate,data$hravg, method=c("pearson", "kendall", "spearman"))

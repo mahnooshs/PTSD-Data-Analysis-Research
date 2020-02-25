@@ -231,7 +231,7 @@ hist(total$Rheartrate, main="",
 library(ggplot2)
 theme_set(theme_bw((base_size=24)))
 ggplot(total, aes(x= Rheartrate)) + 
-  geom_density() + xlab('Resting heart rate')
+  geom_density(size=1.5, fill='grey') + xlab('Resting heart rate')
 
 
 ggsave('Resting Heart Rate Density.pdf', dpi=300)
