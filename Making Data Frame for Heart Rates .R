@@ -148,7 +148,9 @@ heartrate <- ldply (hrlist, data.frame)
 names(heartrate)[names(heartrate) == "X..i.."] <- "hr"
 theme_set(theme_bw((base_size=24)))
 ggplot(heartrate, aes(x= hr)) + 
-  geom_density(size=1.5, fill='grey') + xlab('Heart rate during reported stress moments')
+  geom_density(size=1.5, fill='grey') + 
+  xlab('Heart rate during reported stress moments')+
+  ylab('Density')
 
 ggsave('Heart Rate Density grey.pdf', dpi=300)
 ggsave('Heart Rate Density grey.png', dpi=300)
