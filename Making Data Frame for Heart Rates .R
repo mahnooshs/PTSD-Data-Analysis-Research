@@ -170,6 +170,61 @@ hist(minute , breaks = "hours",labels=TRUE, freq = TRUE,
 ##Plot of heart rate measures in stress moments
 plot( minute[!total$hr==0], total$hr[!total$hr==0], xlab="Time", ylab="Heart Rate in Stress Moments")
 
+##ggplot
+minute1 <- as.POSIXct(as.character(total$time), format="%H:%M:%S")
+
+x <- strptime(minute1, format="%Y-%m-%d %H:%M:%S")
+
+#[1] "2014-02-11 14:22:45"
+#minute1 = format(x, "%H:%M:%S")
+
+
+#If library hms did not work use below line
+#devtools::install_github("r-lib/rlang", build_vignettes = TRUE)
+
+library(hms)
+library(scales)
+total$minute = minute1
+
+total$time1 <- hms::hms(second(minute1), 
+                    minute(minute1), hour(minute1))  
+
+
+
+total$time1<- as.POSIXct(total$time1)
+
+ggplot(total, aes(x=time1)) + 
+  geom_histogram(color="black", fill="white")+
+  scale_x_datetime( labels=date_format("%H:%M"))+ 
+  xlab('Time')+
+  ylab('Frequency of Stress Moments')
+
+
+
+##Better plot
+ggplot(total, aes(x=time1)) + 
+  geom_histogram(aes(y=..density..), colour="black", fill="white")+
+  geom_density(alpha=.2, fill="#FF6666") +
+  geom_vline(aes(xintercept=mean(total$time1)),
+             color="blue", linetype="dashed", size=1) +
+  scale_x_datetime( labels=date_format("%H:%M"))+ 
+  xlab('Time')+
+  ylab('Frequency of Stress Moments')
+ggsave('Frequency of Stress Moments.pdf', dpi=300)
+ggsave('Frequency of Stress Moments.png', dpi=300)
+
+
+plot( minute[!total$hr==0], total$hr[!total$hr==0], xlab="Time", ylab="Heart Rate in Stress Moments")
+
+total1 = total[!total$hr==0]
+ggplot(total1, aes(time1,hr))+geom_point() +
+  scale_x_datetime( labels=date_format("%H:%M"))+
+  stat_ellipse()+ 
+  xlab('Time')+
+  ylab('Heart rate values')
+ggsave('Heart rate scatter plot.pdf', dpi=300)
+ggsave('Heart rate scatter plot.png', dpi=300)
+
 #ggplot(total, 
       # aes(x=minute1, y=total$hr)) + geom_point()
 
