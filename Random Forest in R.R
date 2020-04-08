@@ -2,10 +2,8 @@
 ls()
 rm(list=ls())
 #read Data
-#install.packages("drat", repos="https://cran.rstudio.com")
-#drat:::addRepo("dmlc")
-#install.packages("xgboost", repos="http://dmlc.ml/drat/", type = "source")
-library(xgboost)
+
+library(randomForest)
 library(Matrix)
 library(readr)
 library(stringr)
@@ -13,28 +11,22 @@ library(caret)
 library(car)
 library(ggplot2)
 library(vip)
-
+set.seed(79)
 training_set = read.csv ("Desktop/PTSD/PTSD Data/Training and Testing Data Sets/Training Data Set 75 percent upsampled.csv", header=TRUE)
 test_set = read.csv ("Desktop/PTSD/PTSD Data/Training and Testing Data Sets/Testing Data Set 75 percent.csv", header=TRUE)
-
-
-#trainmatrix = xgb.DMatrix(data=as.matrix(trainvars), label=train_label)
-
-classifier = xgboost(data=as.matrix(training_set[-29]), 
-                     label=training_set$ptsd_moment, objective="binary:logistic", nrounds = 10)
-
-classifier2 = xgboost::xgboost(data=as.matrix(training_set[-29]), 
-                     label=training_set$ptsd_moment, nrounds = 10)
-clf1 = xgb.Booster.complete(classifier)
-
+#training_set$ptsd_moment=as.factor(training_set$ptsd_moment)
+classifier = randomForest(x = training_set[-29],
+                          y= training_set$ptsd_moment,
+                          ntree=10)
 #Applying Kfold Cross validation
 library (caret)
 folds=createFolds(training_set$ptsd_moment, k=10)
 CV= lapply(folds, function(x) {
   training_fold = training_set[-x,]
   test_fold= training_set[x,]
-  classifier = xgboost(data=as.matrix(training_set[-29]), 
-                       label=training_set$ptsd_moment, objective="binary:logistic", nrounds = 10)
+  classifier = randomForest(x = training_set[-29],
+                            y= training_set$ptsd_moment,
+                            ntree=10)
   y_pred = predict(classifier, newdata= as.matrix(test_fold[-29]))
   y_pred=(y_pred >= 0.5)
   cm= table(test_fold[,29], y_pred)
@@ -48,13 +40,14 @@ accuracy=mean(as.numeric(CV))
 y_pred = predict(classifier, newdata=as.matrix(test_set[-29]))
 y_pred1=(y_pred >= 0.5)
 cm= table (test_set[,29], y_pred1)
+cm
 
 
-##ROC graphs
 
+
+
+##AUC ROC
 library (pROC)
-
-
 library(ROCR)
 
 pred = prediction(y_pred,test_set$ptsd_moment)
@@ -71,26 +64,16 @@ auc = performance(pred, "auc")
 auc = unlist(slot(auc, "y.values"))
 auc = round(auc,2)
 legend(0.7,.5,auc,title = 'AUC')
- 
-
-
-##ggplots
-#to draw this you need your roc function
-
-#####Feature importance
 
 
 # Same thing with co-occurence computation this time
 library(Ckmeans.1d.dp)
-xgb.importance(model = classifier)
-xgb.plot.importance (importance_matrix = xgb.importance(model = classifier))
 vip(classifier, num_features = 10)  
-
 
 #####pdp
 library(pdp)
 #classifier00 = xgboost(data=as.matrix(training_set[-29]),label=training_set$ptsd_moment,
-                          #nrounds = 10, objective="binary:logistic")
+#nrounds = 10, objective="binary:logistic")
 
 
 x <- data.matrix(subset(training_set, select = -ptsd_moment)) 
@@ -99,8 +82,6 @@ partial(classifier, pred.var = "hrmin", plot.engine = "ggplot2",
         train = x, plot=TRUE)
 
 #partial2
-partial(classifier, pred.var = "acc_zmax", plot.engine = "ggplot2", 
-        train = x, plot=TRUE)
 partial(classifier, pred.var = "acc_zmax", ice = TRUE, center = TRUE, 
         plot = TRUE, rug = TRUE, alpha = 0.1, plot.engine = "ggplot2",
         train = x)
@@ -109,9 +90,5 @@ partial(classifier, pred.var = "acc_zmax", ice = TRUE, center = TRUE,
 partial(classifier, pred.var = "hrmin", ice = TRUE, center = TRUE, 
         plot = TRUE, rug = TRUE, alpha = 0.1, plot.engine = "ggplot2",
         train = x)
-
-
-
-
 
 
