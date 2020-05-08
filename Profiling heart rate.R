@@ -71,7 +71,9 @@ for (i in 45:53) {
   plot(df1$nhr,xlab="Time (s)", ylab="Heart Rate bpm", main='Heart Rate Around PTSD moment')
   points(which (df1$ptsd_moment %in% 'STRESSMOMENT'),
          df1$nhr [df1$ptsd_moment=='STRESSMOMENT'], col='red', pch = 19, cex=1.5)
-  #points(match(df1$ptsd_moment[df1$ptsd_moment=='STRESSMOMENT'],df1$ptsd_moment),
+ 
+  
+   #points(match(df1$ptsd_moment[df1$ptsd_moment=='STRESSMOMENT'],df1$ptsd_moment),
    #      df1$hr [df1$ptsd_moment=='STRESSMOMENT'], col='red', pch = 19, cex=1.5)
 }
 
@@ -391,5 +393,45 @@ ggsave('Visualization.png',height = 14, width = 11, dpi=300)
   
 #x= which (subset(ts,window=='9')$ptsd_moment %in% 'STRESSMOMENT') 
 #y=subset(ts,window=='9')$knhr[subset(ts,window=='9')$ptsd_moment=='STRESSMOMENT']
+
+
+
+
+
+
+
+
+
+
+#non-normalized figures.
+
+ggplot(data = ts, aes(Time,hr1)) +
+  geom_line(aes( x= Time, y=hr1), size=1.4)+
+  ylab( "Normalized heart rate")+ xlab ("Time(s)") + facet_wrap(~ window)+ 
+  geom_point(data= subset(ts,window==1),aes (x=101,  y=0.5416667), color="red", size=3)+
+  geom_point(data= subset(ts,window==1),aes (x=107,  y=0.7083333), color="red", size=3)+
+  geom_point(data= subset(ts,window==1),aes (x=108,  y=0.7500000), color="red", size=3)+
+  geom_point(data= subset(ts,window==1),aes (x=115,  y=0.9166667), color="red", size=3)+
+  geom_point(data= subset(ts,window==2),aes (x=101,  y=0.24), color="red", size=3)+
+  geom_point(data= subset(ts,window==3),aes (x=101,  y=0.8993700 ), color="red", size=3)+
+  geom_point(data= subset(ts,window==3),aes (x=107,  y=0.8616338), color="red", size=3)+
+  geom_point(data= subset(ts,window==4),aes (x=101,  y=0.08928571 ), color="red", size=3)+
+  geom_point(data= subset(ts,window==5),aes (x=101,  y=1), color="red", size=3)+
+  geom_point(data= subset(ts,window==6),aes (x=101,  y=0.1891892), color="red", size=3)+
+  geom_point(data= subset(ts,window==7),aes (x=101,  y=0.1529442), color="red", size=3)+
+  geom_point(data= subset(ts,window==8),aes (x=101,  y=0.5809663), color="red", size=3)+
+  geom_point(data= subset(ts,window==8),aes (x=102,  y=0.6529577), color="red", size=3)+
+  geom_point(data= subset(ts,window==9),aes (x=101,  y=0.6995142), color="red", size=3)+
+  geom_point(data= subset(ts,window==9),aes (x=292,  y=0.6289503), color="red", size=3)+
+  geom_point(data= subset(ts,window==9),aes (x=542,  y=0.4016297), color="red", size=3)
+
+
+
+
+
+
+
+
+
 
 

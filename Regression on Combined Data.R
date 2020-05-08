@@ -45,9 +45,9 @@ ggcorrplot(cor(subdata), type = "lower",
 ggcorrplot(corr, type = "lower",
            lab = TRUE,   insig = "blank")
 
-
-ggsave('Corrplot.pdf', dpi=300)
-ggsave('Corrplot.png', dpi=300)
+##IF You want t osave the plots
+#############ggsave('Corrplot.pdf', dpi=300)
+#############ggsave('Corrplot.png', dpi=300)
 
 library(corrplot)
 corrplot(corr, type = "upper", order = "hclust",
@@ -77,7 +77,9 @@ full.model <- lm(hravg ~., data = subdata)
 
 step1 <- stepAIC(full.model, direction="both")
 
+
 attach(subdata)
+
 model = lm(hravg ~ Anti.depressants +  Smoke+ 
              Rheartrate + Trigger )
 summary(model)
@@ -87,10 +89,18 @@ full.model <- lm(Rheartrate ~., data = subdata)
 
 step1 <- stepAIC(full.model, direction="both")
 
+
 attach(subdata)
 model = lm(Rheartrate ~ Gender + Anti.depressants + Anxiolytics + Smoke + 
              Sleep + hravg)
 summary(model)
+plot(model)
+cor(Anti.depressants, hravg, method = "pearson")
+cor(Gender, hravg, method = "pearson")
+
+
+
+
 
 #checking for multicollinearity (VIF>10) --> not found
 vif(model)

@@ -94,20 +94,62 @@ library(pdp)
 
 
 x <- data.matrix(subset(training_set, select = -ptsd_moment)) 
+
+
 #partial 1
-partial(classifier, pred.var = "hrmin", plot.engine = "ggplot2", 
-        train = x, plot=TRUE)
 
 #partial2
-partial(classifier, pred.var = "acc_zmax", plot.engine = "ggplot2", 
+p1= partial(classifier, pred.var = "acc_zmax", plot.engine = "ggplot2", 
         train = x, plot=TRUE)
+
+p2 = partial(classifier, pred.var = "hrmin", plot.engine = "ggplot2", 
+             train = x, plot=TRUE)
+
+p3= partial(classifier, pred.var = "acc_ymin", plot.engine = "ggplot2", 
+        train = x, plot=TRUE)
+
+
+p4= partial(classifier, pred.var = "linaccsd", plot.engine = "ggplot2", 
+        train = x, plot=TRUE)
+
+
+p5= partial(classifier, pred.var = "acc_zsd", plot.engine = "ggplot2", 
+        train = x, plot=TRUE)
+
+
+
+p6=partial(classifier, pred.var = "acc_xmin", plot.engine = "ggplot2", 
+        train = x, plot=TRUE)
+
+
+p7=partial(classifier, pred.var = "linear_accel_z", plot.engine = "ggplot2", 
+        train = x, plot=TRUE)
+
+
+
+p8=partial(classifier, pred.var = "hrmax", plot.engine = "ggplot2", 
+        train = x, plot=TRUE)
+
+
+p9=partial(classifier, pred.var = "hrmean", plot.engine = "ggplot2", 
+        train = x, plot=TRUE)
+
+
+
+p10=partial(classifier, pred.var = "acc_zmin", plot.engine = "ggplot2", 
+        train = x, plot=TRUE)
+
+grid.arrange(p1, p2,p3,p4,p5, p6,
+             p7,p8,p9,p10, nrow = 5)
+
+
 partial(classifier, pred.var = "acc_zmax", ice = TRUE, center = TRUE, 
-        plot = TRUE, rug = TRUE, alpha = 0.1, plot.engine = "ggplot2",
-        train = x)
+     plot = TRUE, rug = TRUE, alpha = 0.1, plot.engine = "ggplot2",
+    train = x)
 
 #partial2
 partial(classifier, pred.var = "hrmin", ice = TRUE, center = TRUE, 
-        plot = TRUE, rug = TRUE, alpha = 0.1, plot.engine = "ggplot2",
+       plot = TRUE, rug = TRUE, alpha = 0.1, plot.engine = "ggplot2",
         train = x)
 
 

@@ -216,7 +216,7 @@ total = read.csv("Desktop/PTSD/PTSD Data/Resting heart rate for all/RestingHeart
 sort (total$Rheartrate)
 mean (total$Rheartrate, na.rm =  TRUE)
 sd(total$Rheartrate,na.rm = TRUE)
-
+median(total$Rheartrate, na.rm =  TRUE)
 
 # Kernel Density Plot
 d <- density(total$Rheartrate, na.rm = TRUE) # returns the density data 

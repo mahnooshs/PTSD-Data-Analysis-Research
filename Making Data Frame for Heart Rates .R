@@ -152,6 +152,7 @@ ggplot(heartrate, aes(x= hr)) +
   xlab('Heart rate during reported stress moments')+
   ylab('Density')
 
+median(heartrate$hr, na.rm = TRUE)
 ggsave('Heart Rate Density grey.pdf', dpi=300)
 ggsave('Heart Rate Density grey.png', dpi=300)
 
@@ -221,7 +222,8 @@ ggplot(total1, aes(time1,hr))+geom_point() +
   scale_x_datetime( labels=date_format("%H:%M"))+
   stat_ellipse()+ 
   xlab('Time')+
-  ylab('Heart rate values')
+  ylab('Heart rate values') + geom_vline(xintercept =c(28000,62000),
+                                         color = "blue", size=1)
 ggsave('Heart rate scatter plot.pdf', dpi=300)
 ggsave('Heart rate scatter plot.png', dpi=300)
 
