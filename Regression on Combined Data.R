@@ -54,13 +54,18 @@ corrplot(corr, type = "upper", order = "hclust",
          col = c("black", "white"), bg = "lightblue")
 
 
-##Testing some correlations
+##Testing some correlations 
 cor.test(data$Rheartrate,data$hravg, method=c("pearson", "kendall", "spearman"))
 
 cor.test(data$Rheartrate,data$Smoke, method=c("pearson", "kendall", "spearman"))
 
 
 cor.test(data$Rheartrate,data$Anti.depressants, method=c("pearson", "kendall", "spearman"))
+
+cor.test(data$Rheartrate,data$Age, method="pearson")
+
+cor.test(data$Rheartrate,data$Sleep, method="pearson")
+cor.test(data$Rheartrate,data$Gender, method="pearson")
 
 #including ACC data here is not useful based on domain knowledge
 #Compute missing value
@@ -123,3 +128,37 @@ with(subdata, plot3d(Rheartrate,hravg,Trigger, type = 's', col=as.integer(Anxiol
 
 fit <- lm(data$stress~data$Rheartrate)
 summary(fit)
+
+
+
+########## Sleep for more than 6 hours and less than 6 hours
+
+
+subdata$Sleep [subdata$Sleep==2]=0
+subdata$Sleep [subdata$Sleep==3]=0
+subdata$Sleep [subdata$Sleep==4]=1
+
+
+full.model <- lm(Rheartrate ~., data = subdata)
+
+step1 <- stepAIC(full.model, direction="both")
+
+
+attach(subdata)
+model = lm(Rheartrate ~ Gender + Anti.depressants + Anxiolytics + Smoke + 
+             Sleep + hravg)
+summary(model)
+
+corr = cor(subdata)
+
+ggcorrplot(corr, type = "lower",
+           lab = TRUE,   insig = "blank")
+
+cor.test(subdata$Rheartrate,subdata$Sleep, method="pearson")
+
+
+
+
+
+
+
